@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import {Control, Errors, LocalForm} from "react-redux-form";
 import { Loading } from "./LoadingComponent";
 import { baseUrl } from "../shared/baseUrl";
+import { FadeTransform, Fade, Stagger} from 'react-animation-components';
 
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => (val) && (val.length >= len);
@@ -97,13 +98,18 @@ class CommentForm extends Component {
 
 function RenderDish({dish}) {
     return (
-        <Card key={dish.id}>
-            <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
-            <CardBody>
-                <CardTitle>{dish.name}</CardTitle>
-                <CardText>{dish.description}</CardText>
-            </CardBody>
-        </Card>
+        <FadeTransform in
+                       transformProps={{
+                           exitTransform: 'scale(0.5) translateY(-50%)'
+                       }}>
+            <Card key={dish.id}>
+                <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
+                <CardBody>
+                    <CardTitle>{dish.name}</CardTitle>
+                    <CardText>{dish.description}</CardText>
+                </CardBody>
+            </Card>
+        </FadeTransform>
     );
 }
 
@@ -111,7 +117,7 @@ function RenderDish({dish}) {
 function RenderComments({comments, postComment, dishId}) {
     const listItems = comments.map((comment) => {
         return (
-            <div>
+            <Fade in>
                 <li key={comment.id}>
                     <div>
                         <p>{comment.comment}</p>
@@ -124,7 +130,7 @@ function RenderComments({comments, postComment, dishId}) {
                         }).format(new Date(Date.parse(comment.date)))}</p>
                     </div>
                 </li>
-            </div>
+            </Fade>
         );
     });
 
@@ -134,7 +140,9 @@ function RenderComments({comments, postComment, dishId}) {
                 <h4>Comments</h4>
                 <div>
                     <ul className="list-unstyled">
-                        {listItems}
+                        <Stagger in>
+                            {listItems}
+                        </Stagger>
                     </ul>
                 </div>
                 <CommentForm dishId={dishId} postComment={postComment}/>
@@ -186,8 +194,8 @@ const DishDetail = (props) => {
                     </div>
                     <div className="col-12 col-md-5 m-1">
                         <RenderComments comments={props.comments}
-                            postComment={props.postComment}
-                            dishId={props.dish.id}/>
+                                        postComment={props.postComment}
+                                        dishId={props.dish.id}/>
                     </div>
                 </div>
             </div>
